@@ -1,6 +1,8 @@
+import { buildStore } from '../store'
+
 export type LoginState = {
   form: {
-    email: string,
+    username: string,
     password: string
   },
   isLoading: boolean,
@@ -8,13 +10,13 @@ export type LoginState = {
 }
 
 export type LoginAction =
-  | { type: 'LOGIN/UPDATE_FORM', field: string, data: string }
-  | { type: 'LOGIN/SUBMITTING' }
-  | { type: 'LOGIN/LOGGED_IN' }
+  | { type: 'UPDATE_FORM', field: string, data: string }
+  | { type: 'SUBMITTING' }
+  | { type: 'LOGGED_IN' }
 
 export const initialState = {
   form: {
-    email: '',
+    username: '',
     password: '',
   },
   isLoading: false,
@@ -23,7 +25,7 @@ export const initialState = {
 
 export const loginReducer = (state: LoginState, action: LoginAction): LoginState => {
   switch (action.type) {
-    case 'LOGIN/UPDATE_FORM':
+    case 'UPDATE_FORM':
       return {
         ...state,
         form: {
@@ -31,11 +33,22 @@ export const loginReducer = (state: LoginState, action: LoginAction): LoginState
           [action.field]: action.data,
         },
       }
-    case 'LOGIN/SUBMITTING':
+    case 'SUBMITTING':
       return { ...state, isLoading: true }
-    case 'LOGIN/LOGGED_IN':
+    case 'LOGGED_IN':
       return { ...state, isLoading: false, loggedIn: true }
     default:
       return state
   }
+}
+
+const { StoreProvider, useDispatch, useStore } = buildStore(
+  loginReducer,
+  initialState,
+)
+
+export {
+  StoreProvider as LoginProvider,
+  useDispatch as useLoginDispatch,
+  useStore as useLoginStore,
 }

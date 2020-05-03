@@ -1,38 +1,34 @@
-import React from 'react'
-import { LoginAction, loginReducer, LoginState, initialState as loginInitialState } from './reducers/login'
+import React, { Reducer } from 'react'
 
-type State = {
-  login: LoginState
-}
+export function buildStore<State, Action> (reducer: Reducer<State, Action>, initialState: State) {
+  const storeContext = React.createContext<State>(null!)
+  const dispatchContext = React.createContext<React.Dispatch<Action>>(() => null)
 
-type Actions =
-  | LoginAction
+  const StoreProvider: React.FC = ({ children }) => {
+    const [store, dispatch] = React.useReducer(reducer, initialState)
 
-const initialState: State = {
-  login: loginInitialState,
-}
+    return (
+      <dispatchContext.Provider value={dispatch}>
+        <storeContext.Provider value={store}>
+          {children}
+        </storeContext.Provider>
+      </dispatchContext.Provider>
+    )
+  }
 
-const appReducer = (state: State, action: Actions) => ({
-  login: loginReducer(state.login, action),
-})
+  function useStore () {
+    return React.useContext(storeContext)
+  }
 
-const StoreContext = React.createContext<{ state: State, dispatch: React.Dispatch<any> }>({
-  state: initialState,
-  dispatch: () => null,
-})
+  function useDispatch () {
+    return React.useContext<React.Dispatch<Action>>(dispatchContext)
+  }
 
-export const StoreProvider: React.FC = ({ children }) => {
-  const [state, dispatch] = React.useReducer(appReducer, initialState)
-
-  return (
-    <StoreContext.Provider value={{ state, dispatch }}>
-      {children}
-    </StoreContext.Provider>
-  )
-}
-
-export const StoreConsumer = StoreContext.Consumer
-
-export function useStore () {
-  return React.useContext(StoreContext)
+  return {
+    StoreProvider,
+    useStore,
+    useDispatch,
+    storeContext,
+    dispatchContext,
+  }
 }

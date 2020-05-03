@@ -1,13 +1,13 @@
 import React from 'react'
-import { StoreProvider } from './store'
 import Login from './login'
 import User from './user'
+import { LoginProvider } from './reducers/login'
 
 export default function App () {
   return (
-    <StoreProvider>
-      <User />
+    <LoginProvider>
       <Login />
-    </StoreProvider>
+      <User />
+    </LoginProvider>
   )
 }

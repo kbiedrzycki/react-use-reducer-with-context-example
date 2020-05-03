@@ -1,11 +1,11 @@
 import React from 'react'
-import { useStore } from './store'
+import { useLoginStore } from './reducers/login'
 
 export default function User () {
-  const { state } = useStore()
+  const state = useLoginStore()
 
-  if (state.login.loggedIn) {
-    return <div>Welcome {state.login.form.email}!</div>
+  if (state.loggedIn) {
+    return <div>Welcome {state.form.username}!</div>
   }
 
   return null
